@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#17233B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>متجري</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F3F4F7;--sf:#fff;--ink:#17233B;--mut:#667089;--ln:#E2E5EC;--ac:#0F766E;--acs:#DCF1EE;--wr:#B45309;--rd:#B91C1C;--hd:#17233B;--hdt:#fff;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0E1424;--sf:#182039;--ink:#EEF1F7;--mut:#9AA3B8;--ln:#2A3354;--ac:#2DD4BF;--acs:#12322F;--wr:#F59E0B;--rd:#F87171;--hd:#0A0F1C}}
+:root[data-theme="dark"]{--bg:#0E1424;--sf:#182039;--ink:#EEF1F7;--mut:#9AA3B8;--ln:#2A3354;--ac:#2DD4BF;--acs:#12322F;--wr:#F59E0B;--rd:#F87171;--hd:#0A0F1C}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{background:var(--bg);color:var(--ink);font-family:'Tajawal',system-ui,'Segoe UI',Tahoma,sans-serif;font-size:16px;display:flex;flex-direction:column;overflow:hidden}
+header{background:var(--hd);color:var(--hdt);padding:14px 18px;font-size:20px;font-weight:700}
+.wrap{flex:1;position:relative;min-height:0}
+main{position:absolute;inset:0;overflow-y:auto;padding:14px 14px 90px}
+nav{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));width:100%;background:var(--sf);border-top:1px solid var(--ln)}
+nav button{min-width:0;border:0;background:none;color:var(--mut);font:inherit;font-size:11px;padding:8px 0 7px;white-space:nowrap;text-align:center;justify-content:center;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
+nav button span{font-size:21px;line-height:1.1}
+nav button.on{color:var(--ac);font-weight:700;box-shadow:inset 0 3px 0 var(--ac)}
+.row{background:var(--sf);border:1px solid var(--ln);border-radius:10px;padding:12px 14px;margin-bottom:9px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.row b{font-weight:700}
+.sub{color:var(--mut);font-size:13.5px;margin-top:2px}
+.tag{background:var(--acs);color:var(--ac);border-radius:20px;padding:3px 11px;font-weight:700;font-size:14px;white-space:nowrap}
+.tag.low{background:#FDE9D4;color:var(--wr)}
+.x{border:0;background:none;color:var(--mut);font:inherit;font-size:13px;cursor:pointer;padding:6px 0 6px 4px}
+.x.sure{color:var(--rd);font-weight:700}
+.empty{text-align:center;color:var(--mut);padding:50px 20px;line-height:1.9}
+#fab{position:absolute;left:16px;bottom:16px;width:56px;height:56px;border-radius:50%;border:0;background:var(--ac);color:#fff;font-size:30px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.25)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px}
+.card{background:var(--sf);border:1px solid var(--ln);border-radius:10px;padding:12px 14px}
+.card small{color:var(--mut);display:block;font-size:13px}
+.card strong{font-size:22px}
+.card.big{grid-column:1/-1;background:var(--hd);color:var(--hdt);border:0}
+.card.big small{color:#B9C1D6}
+.card.big strong{font-size:30px}
+h3{font-size:16px;margin:16px 2px 9px}
+.bars{display:flex;align-items:flex-end;gap:7px;height:130px;background:var(--sf);border:1px solid var(--ln);border-radius:10px;padding:12px 12px 8px}
+.bars div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;font-size:11px;color:var(--mut);gap:4px}
+.bars i{display:block;width:100%;background:var(--ac);border-radius:4px 4px 0 0;min-height:2px}
+#ov{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-end;z-index:20}
+#ov.on{display:flex}
+#sh{background:var(--sf);width:100%;border-radius:16px 16px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px));max-height:88%;overflow-y:auto}
+#sh h2{font-size:18px;margin-bottom:12px}
+label{display:block;font-size:13.5px;color:var(--mut);margin:10px 0 4px}
+input,select,textarea{width:100%;font:inherit;padding:11px 12px;border:1px solid var(--ln);border-radius:8px;background:var(--bg);color:var(--ink)}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--ac);outline-offset:1px}
+.btns{display:flex;gap:10px;margin-top:16px}
+.btns button{flex:1;font:inherit;font-weight:700;padding:12px;border-radius:8px;border:1px solid var(--ln);background:var(--bg);color:var(--ink);cursor:pointer}
+.btns button.p{background:var(--ac);border-color:var(--ac);color:#fff}
+#err{color:var(--rd);font-size:14px;margin-top:10px;min-height:1em}
+</style>
+</head>
+<body>
+<header id="ttl"></header>
+<div class="wrap"><main id="main"></main><button id="fab" aria-label="إضافة">+</button></div>
+<nav id="nav"></nav>
+<div id="ov"><div id="sh"></div></div>
+<script>
+const K='shop_v1';
+let S={items:[],customers:[],suppliers:[],purchases:[],sales:[],pays:[]};
+try{const r=localStorage.getItem(K);if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const f=v=>(+v||0).toLocaleString('en-US',{maximumFractionDigits:2});
+const sum=(a,g)=>a.reduce((s,x)=>s+g(x),0);
+const today=()=>new Date().toISOString().slice(0,10);
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const tabs=[['items','المخزون','📦'],['customers','العملاء','👥'],['purchases','المشتريات','🛒'],['sales','المبيعات','💰'],['suppliers','الموردون','🚚'],['stats','التحليل','📊']];
+let tab='items',pend=null;
+
+const empty=m=>`<div class="empty">${m}</div>`;
+const del=(k,id)=>`<button class="x ${pend===k+id?'sure':''}" data-del="${k}:${id}">${pend===k+id?'تأكيد الحذف':'حذف'}</button>`;
+
+let q='';
+const m=(...s)=>!q||s.join(' ').toLowerCase().includes(q.toLowerCase());
+const paidOf=(x,t)=>x.paid==null?t:x.paid;
+const debt=(k,id)=>{const L=k==='customers'?S.sales.filter(s=>s.pid===id).map(s=>s.qty*s.price-paidOf(s,s.qty*s.price)):S.purchases.filter(s=>s.pid===id).map(s=>s.qty*s.cost-paidOf(s,s.qty*s.cost));return sum(L,x=>x)-sum(S.pays.filter(p=>p.kind===k&&p.pid===id),p=>p.amount)};
+const party=(k,c)=>{const t=k==='customers'?sum(S.sales.filter(s=>s.pid===c.id),s=>s.qty*s.price):sum(S.purchases.filter(s=>s.pid===c.id),s=>s.qty*s.cost);const d=debt(k,c.id);return `<div class="row" data-edit="${k}:${c.id}"><div><b>${esc(c.name)}</b><div class="sub">${esc(c.phone)||'بدون رقم'}${d>0?` · <span style="color:var(--wr);font-weight:700">${k==='customers'?'عليه':'عليك'} ${f(d)}</span>`:''}</div>${del(k,c.id)}<button class="x" data-pay="${k}:${c.id}">تسجيل دفعة</button></div><span class="tag">${f(t)}</span></div>`};
+function edit(k,id){const o=S[k].find(x=>x.id===id);if(!o)return;
+  if(k==='items')sheet('تعديل المنتج',fld('a','اسم المنتج','text',o.name)+fld('b','الكمية','number',o.qty)+fld('c','سعر الشراء (التكلفة)','number',o.cost)+fld('d','سعر البيع','number',o.price),()=>{if(!v('a'))return'اكتب اسم المنتج.';Object.assign(o,{name:v('a'),qty:nv('b'),cost:nv('c'),price:nv('d')})});
+  else sheet(k==='customers'?'تعديل العميل':'تعديل المورد',fld('a','الاسم','text',o.name)+fld('b','رقم الهاتف','tel',o.phone),()=>{if(!v('a'))return'اكتب الاسم.';o.name=v('a');o.phone=v('b')});}
+function pay(k,id){const o=S[k].find(x=>x.id===id);if(!o)return;const d=Math.max(0,debt(k,id));
+  sheet((k==='customers'?'دفعة من ':'دفعة إلى ')+esc(o.name),'<p class="sub">المتبقي: '+f(d)+'</p>'+fld('a','المبلغ','number',d||''),()=>{const a=nv('a');if(a<=0)return'أدخل مبلغًا صحيحًا.';S.pays.push({id:uid(),date:today(),kind:k,pid:id,amount:a})},'تسجيل');}
+function backup(){
+  sheet('نسخ احتياطي واستعادة','<p class="sub">انسخ النص واحفظه في مكان آمن (ملاحظات أو واتساب). للاستعادة الصق النص هنا واضغط استعادة، وسيستبدل البيانات الحالية.</p><textarea id="t" rows="7" style="direction:ltr;font-size:12px"></textarea><div class="btns"><button id="cp">نسخ</button><button id="sg">مشاركة</button></div>',()=>{try{const d=JSON.parse($('#t').value);if(!d||!Array.isArray(d.items))return'النص غير صالح.';S=Object.assign({items:[],customers:[],suppliers:[],purchases:[],sales:[],pays:[]},d)}catch(e){return'النص غير صالح.'}},'استعادة');
+  $('#t').value=JSON.stringify(S);
+  $('#cp').onclick=async()=>{const t=$('#t');t.select();try{await navigator.clipboard.writeText(t.value);$('#err').textContent='تم النسخ.'}catch(e){try{document.execCommand('copy')}catch(x){}$('#err').textContent='إن لم يُنسخ النص فحدده وانسخه يدويًا.'}};
+  $('#sg').onclick=()=>{if(navigator.share)navigator.share({text:$('#t').value}).catch(()=>{});else $('#err').textContent='المشاركة غير متاحة، استخدم النسخ.'};}
+const views={
+items(){
+  if(!S.items.length)return empty('لا توجد منتجات بعد.<br>اضغط + لإضافة أول منتج.');
+  return S.items.filter(i=>m(i.name)).map(i=>`<div class="row" data-edit="items:${i.id}"><div><b>${esc(i.name)}</b><div class="sub">بيع ${f(i.price)} · تكلفة ${f(i.cost)}</div>${del('items',i.id)}</div><span class="tag ${i.qty<=3?'low':''}">${f(i.qty)}</span></div>`).join('');
+},
+customers(){
+  if(!S.customers.length)return empty('لا يوجد عملاء بعد.<br>اضغط + لإضافة عميل.');
+  return S.customers.filter(c=>m(c.name,c.phone)).map(c=>party('customers',c)).join('');
+},
+suppliers(){
+  if(!S.suppliers.length)return empty('لا يوجد موردون بعد.<br>اضغط + لإضافة مورد.');
+  return S.suppliers.filter(c=>m(c.name,c.phone)).map(c=>party('suppliers',c)).join('');
+},
+purchases(){
+  if(!S.purchases.length)return empty('لا توجد مشتريات بعد.<br>اضغط + لتسجيل عملية شراء.');
+  return S.purchases.slice().reverse().filter(p=>m(p.iname,p.pname,p.date)).map(p=>`<div class="row"><div><b>${esc(p.iname)}</b><div class="sub">${f(p.qty)} × ${f(p.cost)} · ${esc(p.pname)} · ${p.date}</div>${del('purchases',p.id)}</div><span class="tag">${f(p.qty*p.cost)}</span></div>`).join('');
+},
+sales(){
+  if(!S.sales.length)return empty('لا توجد مبيعات بعد.<br>اضغط + لتسجيل عملية بيع.');
+  return S.sales.slice().reverse().filter(p=>m(p.iname,p.pname,p.date)).map(p=>`<div class="row"><div><b>${esc(p.iname)}</b><div class="sub">${f(p.qty)} × ${f(p.price)} · ${esc(p.pname)} · ${p.date}</div>${del('sales',p.id)}</div><span class="tag">${f(p.qty*p.price)}</span></div>`).join('');
+},
+stats(){
+  const sl=sum(S.sales,x=>x.qty*x.price),bu=sum(S.purchases,x=>x.qty*x.cost),pr=sum(S.sales,x=>x.qty*(x.price-x.cost)),sv=sum(S.items,x=>x.qty*x.cost),low=S.items.filter(i=>i.qty<=3).length,cd=sum(S.customers,c=>Math.max(0,debt('customers',c.id))),sd=sum(S.suppliers,c=>Math.max(0,debt('suppliers',c.id)));
+  const days=[...Array(7)].map((_,k)=>{const d=new Date(Date.now()-(6-k)*864e5);const key=d.toISOString().slice(0,10);return{l:d.toLocaleDateString('ar',{weekday:'short'}),v:sum(S.sales.filter(s=>s.date===key),s=>s.qty*s.price)}});
+  const mx=Math.max(1,...days.map(d=>d.v));
+  const top={};S.sales.forEach(s=>top[s.iname]=(top[s.iname]||0)+s.qty);
+  const tl=Object.entries(top).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  return `<div class="grid"><div class="card big"><small>صافي الربح</small><strong>${f(pr)}</strong></div>
+  <div class="card"><small>إجمالي المبيعات</small><strong>${f(sl)}</strong></div>
+  <div class="card"><small>إجمالي المشتريات</small><strong>${f(bu)}</strong></div>
+  <div class="card"><small>قيمة المخزون</small><strong>${f(sv)}</strong></div>
+  <div class="card"><small>منتجات شارفت على النفاد</small><strong>${low}</strong></div>
+  <div class="card"><small>ديون العملاء لك</small><strong>${f(cd)}</strong></div>
+  <div class="card"><small>ديون الموردين عليك</small><strong>${f(sd)}</strong></div></div>
+  <h3>مبيعات آخر 7 أيام</h3><div class="bars">${days.map(d=>`<div><i style="height:${Math.round(d.v/mx*80)}%"></i>${d.l}</div>`).join('')}</div>
+  <h3>الأكثر مبيعًا</h3>${tl.length?tl.map(t=>`<div class="row"><b>${esc(t[0])}</b><span class="tag">${f(t[1])}</span></div>`).join(''):empty('ستظهر هنا بعد أول عملية بيع.')}<h3>البيانات</h3><div class="btns"><button data-backup>نسخ احتياطي واستعادة</button></div>`;
+}};
+
+function render(){
+  $('#nav').innerHTML=tabs.map(t=>`<button data-tab="${t[0]}" class="${t[0]===tab?'on':''}"><span>${t[2]}</span>${t[1]}</button>`).join('');
+  $('#ttl').textContent=tabs.find(t=>t[0]===tab)[1];
+  $('#main').innerHTML=(tab==='stats'?'':`<input id="q" placeholder="بحث..." value="${esc(q)}" style="margin-bottom:12px">`)+`<div id="lst">${views[tab]()||(q?empty('لا نتائج.'):'')}</div>`;
+  $('#fab').style.display=tab==='stats'?'none':'';
+}
+
+const fld=(id,l,t='text',v='')=>`<label for="${id}">${l}</label><input id="${id}" type="${t}" ${t==='number'?'inputmode="decimal" min="0" step="any"':''} value="${esc(v)}">`;
+const sel=(id,l,o)=>`<label for="${id}">${l}</label><select id="${id}">${o}</select>`;
+const opts=(a,x)=>a.map(i=>`<option value="${i.id}">${esc(i.name)}</option>`).join('')+(x||'');
+function sheet(title,body,ok,lab){
+  $('#sh').innerHTML=`<h2>${title}</h2>${body}<div id="err"></div><div class="btns"><button data-close>إلغاء</button><button class="p" id="ok">${lab||'حفظ'}</button></div>`;
+  $('#ov').classList.add('on');
+  $('#ok').onclick=()=>{const m=ok();if(m)$('#err').textContent=m;else{save();$('#ov').classList.remove('on');render()}};
+}
+const v=id=>$('#'+id).value.trim(),nv=id=>parseFloat($('#'+id).value)||0;
+
+function add(){
+  if(tab==='items')sheet('منتج جديد',fld('a','اسم المنتج')+fld('b','الكمية','number')+fld('c','سعر الشراء (التكلفة)','number')+fld('d','سعر البيع','number'),()=>{
+    if(!v('a'))return'اكتب اسم المنتج.';S.items.push({id:uid(),name:v('a'),qty:nv('b'),cost:nv('c'),price:nv('d')});});
+  else if(tab==='customers'||tab==='suppliers'){const k=tab;
+    sheet(k==='customers'?'عميل جديد':'مورد جديد',fld('a','الاسم')+fld('b','رقم الهاتف','tel'),()=>{
+    if(!v('a'))return'اكتب الاسم.';S[k].push({id:uid(),name:v('a'),phone:v('b')});});}
+  else if(tab==='purchases'){
+    if(!S.items.length)return sheet('تنبيه','<p>أضف منتجًا في المخزون أولًا.</p>',()=>null);
+    sheet('عملية شراء',sel('p','المورد',opts(S.suppliers,'<option value="">مورد غير مسجل</option>'))+sel('i','المنتج',opts(S.items))+fld('q','الكمية','number')+fld('c','سعر الوحدة','number',S.items[0].cost)+fld('r','المدفوع (فارغ = كامل المبلغ)','number'),()=>{
+    const it=S.items.find(x=>x.id===v('i')),q=nv('q'),c=nv('c');if(q<=0)return'أدخل كمية صحيحة.';
+    const p=S.suppliers.find(x=>x.id===v('p'));it.qty+=q;it.cost=c;
+    S.purchases.push({id:uid(),date:today(),pid:p?p.id:'',pname:p?p.name:'مورد غير مسجل',iid:it.id,iname:it.name,qty:q,cost:c,paid:v('r')===''?q*c:nv('r')});});
+    $('#i').onchange=()=>{$('#c').value=S.items.find(x=>x.id===v('i')).cost};}
+  else if(tab==='sales'){
+    if(!S.items.length)return sheet('تنبيه','<p>أضف منتجًا في المخزون أولًا.</p>',()=>null);
+    sheet('عملية بيع',sel('p','العميل',opts(S.customers,'<option value="">عميل نقدي</option>'))+sel('i','المنتج',opts(S.items))+fld('q','الكمية','number')+fld('c','سعر البيع','number',S.items[0].price)+fld('r','المدفوع (فارغ = كامل المبلغ)','number'),()=>{
+    const it=S.items.find(x=>x.id===v('i')),q=nv('q'),c=nv('c');if(q<=0)return'أدخل كمية صحيحة.';
+    if(q>it.qty)return'المتوفر في المخزون: '+f(it.qty);
+    const p=S.customers.find(x=>x.id===v('p'));it.qty-=q;
+    S.sales.push({id:uid(),date:today(),pid:p?p.id:'',pname:p?p.name:'عميل نقدي',iid:it.id,iname:it.name,qty:q,price:c,cost:it.cost,paid:v('r')===''?q*c:nv('r')});});
+    $('#i').onchange=()=>{$('#c').value=S.items.find(x=>x.id===v('i')).price};}
+}
+
+document.addEventListener('click',e=>{
+  const t=e.target.closest('button');
+  if(!t){const r=e.target.closest('[data-edit]');if(r){const[k,id]=r.dataset.edit.split(':');edit(k,id)}return}
+  if(t.dataset.tab){tab=t.dataset.tab;pend=null;q='';render();$('#main').scrollTop=0}
+  else if(t.id==='fab')add();
+  else if(t.dataset.pay){const[k,id]=t.dataset.pay.split(':');pay(k,id)}
+  else if(t.hasAttribute('data-backup'))backup();
+  else if(t.hasAttribute('data-close'))$('#ov').classList.remove('on');
+  else if(t.dataset.del){const[k,id]=t.dataset.del.split(':');
+    if(pend===k+id){S[k]=S[k].filter(x=>x.id!==id);pend=null;save();}else pend=k+id;render();}
+});
+document.addEventListener('input',e=>{if(e.target.id==='q'){q=e.target.value;$('#lst').innerHTML=views[tab]()||empty('لا نتائج.')}});
+$('#ov').addEventListener('click',e=>{if(e.target.id==='ov')$('#ov').classList.remove('on')});
+render();
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}
+</script>
+</body>
+</html>
