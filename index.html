@@ -63,6 +63,12 @@ input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid v
 body{font-weight:var(--fw,400)}
 #zz,#zs{zoom:var(--z,1)}
 input[type=range]{padding:6px 0;accent-color:var(--ac)}
+.tb{width:100%;border-collapse:collapse;font-size:14px;margin:6px 0}
+.tb th,.tb td{border:1px solid var(--ln);padding:7px 5px;text-align:center}
+.tb th{background:var(--acs);color:var(--ac)}
+.tb td:nth-child(2){text-align:start}
+.tb tr.tt td{font-weight:700;background:var(--bg)}
+.x.dl,.btns button.dl{color:var(--rd);font-weight:700}
 #back{background:none;border:0;color:inherit;font-size:26px;cursor:pointer;padding:0 4px;line-height:1}
 main.hm{display:block;padding:14px 14px 28px;overflow-y:auto}
 .home{display:grid;grid-template-columns:1fr 1fr;gap:18px 14px}
@@ -108,7 +114,7 @@ const sum=(a,g)=>a.reduce((s,x)=>s+g(x),0);
 const today=()=>new Date().toISOString().slice(0,10);
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const empty=m=>`<div class="empty">${m}</div>`;
-const del=(k,id)=>`<button class="x ${pend===k+id?'sure':''}" data-del="${k}:${id}">${pend===k+id?'تأكيد الحذف':'حذف'}</button>`;
+const del=(k,id)=>`<button class="x dl ${pend===k+id?'sure':''}" data-del="${k}:${id}">${pend===k+id?'⚠ اضغط للتأكيد':'🗑 حذف'}</button>`;
 const m=(...s)=>!q||s.join(' ').toLowerCase().includes(q.toLowerCase());
 const tabs=[['items','المخزون','📦'],['customers','العملاء','👥'],['purchases','المشتريات','🛒'],['sales','المبيعات','💰'],['invoices','الفواتير','🧾'],['suppliers','الموردون','🚚'],['stats','التحليل','📊']];
 const fld=(id,l,t='text',v='')=>`<label for="${id}">${l}</label><input id="${id}" type="${t}" ${t==='number'?'inputmode="decimal" min="0" step="any"':''} value="${esc(v)}">`;
@@ -153,6 +159,11 @@ function homeHTML(){const A=calc('sales').filter(x=>x.r>0.005).length;
   const T=[['items','مخزن المنتجات','📦',S.items.length+' منتج','#0F766E','#2DD4BF','wide'],['purchases','شراء','🛒',S.purchases.length+' عملية','#1D4ED8','#60A5FA',''],['sales','بيع','💰',S.sales.length+' عملية','#B45309','#FBBF24',''],['suppliers','الموردون','🚚',S.suppliers.length+' مورد','#6D28D9','#A78BFA',''],['customers','العملاء','👥',S.customers.length+' عميل','#BE185D','#F472B6',''],['invoices','الفواتير','🧾',S.sales.length?(A?A+' غير مسددة':'كلها مسددة'):'لا توجد فواتير','#374151','#9CA3AF',''],['stats','التحليل','📊','الأرباح والإحصاءات','#047857','#6EE7B7','']];
   const tl=(x,a)=>`<button class="tile ${x[6]} ${x[0]==='invoices'&&A?'warn':''}" ${a}><div class="pic" style="background:linear-gradient(135deg,${x[4]},${x[5]})"><span>${x[2]}</span></div><b>${x[1]}</b><small>${x[3]}</small></button>`;
   return '<div class="home">'+T.map(x=>tl(x,'data-tab="'+x[0]+'"')).join('')+tl(['','الإعدادات','⚙️','الخط والعملة','#475569','#CBD5E1',''],'data-set')+'</div>'}
+const tbl=(L,u,T,rm)=>'<div style="overflow-x:auto"><table class="tb"><tr><th>#</th><th>المنتج</th><th>الكمية</th><th>السعر</th><th>الحاصل</th>'+(rm?'<th></th>':'')+'</tr>'
+ +L.map((l,i)=>`<tr><td>${i+1}</td><td>${esc(l.iname)}${rm&&!l.iid?' <small>(جديد)</small>':''}</td><td>${f(l.qty)}</td><td>${f(u(l))}</td><td>${f(l.qty*u(l))}</td>${rm?`<td><button class="x dl" data-rm="${i}">✕</button></td>`:''}</tr>`).join('')
+ +`<tr class="tt"><td colspan="4">المجموع</td><td>${fm(T)}</td>${rm?'<td></td>':''}</tr></table></div>`;
+const two=(b,fn)=>{b.onclick=()=>{if(!b.dataset.s){b.dataset.s=1;b.textContent='⚠ اضغط للتأكيد';return}fn()}};
+function rmInv(k,no){const sale=k==='sales',x=S[k].find(y=>y.no===no);if(!x)return;x.lines.forEach(l=>{const it=S.items.find(t=>t.id===l.iid);if(it)it.qty=Math.max(0,it.qty+(sale?l.qty:-l.qty))});S[k]=S[k].filter(y=>y.no!==no);save()}
 function inv(k,pre,pi){const sale=k==='sales',P=sale?S.customers:S.suppliers,D={pid:pre||'',lines:[],disc:'',paid:'',nn:'',np:'',i:pi||''};
  const tot=()=>sum(D.lines,l=>l.qty*(sale?l.price:l.cost));
  const grab=()=>{if($('#p')){D.pid=v('p');D.nn=v('nn');D.np=v('np');D.disc=v('d');D.paid=v('r')}};
@@ -167,7 +178,7 @@ function inv(k,pre,pi){const sale=k==='sales',P=sale?S.customers:S.suppliers,D={
    +'<div id="nw" style="display:none">'+fld('wn','اسم المنتج الجديد')+'</div>'+fld('q','الكمية','number')+fld('c',sale?'سعر البيع':'سعر الشراء (التكلفة)','number')+(sale?'':fld('sp','سعر البيع المتوقع','number'))
    +'<div class="btns"><button id="ad">+ إضافة للفاتورة</button></div></div>'
    +'<h3>بنود الفاتورة ('+D.lines.length+')</h3>'
-   +D.lines.map((l,j)=>`<div class="row"><div><b>${esc(l.iname)}${l.iid?'':' (جديد)'}</b><div class="sub">${f(l.qty)} × ${fm(sale?l.price:l.cost)} = ${fm(l.qty*(sale?l.price:l.cost))}</div></div><button class="x" data-rm="${j}">✕</button></div>`).join('')
+   +(D.lines.length?tbl(D.lines,l=>sale?l.price:l.cost,tot(),1):'<p class="sub">لم تُضف منتجات بعد.</p>')
    +fld('d','الخصم','number',D.disc)+fld('r','المدفوع (فارغ = كامل المبلغ)','number',D.paid)+'<div class="card" id="tt" style="margin-top:12px"></div>',
    ()=>{grab();if(!D.lines.length)return'أضف منتجًا واحدًا على الأقل.';
     let o=P.find(x=>x.id===D.pid);
@@ -201,7 +212,7 @@ function showInv(k,no){const x=calc(k).find(y=>y.no===no);if(!x)return;
  const rw=z=>`<div class="row" style="margin-bottom:0;border-radius:0"><span class="sub">${z[0]}</span><b>${esc(z[1])}</b></div>`;
  const txt='متجري - فاتورة '+(sale?'بيع':'شراء')+' رقم '+no+'\n'+H.map(z=>z[0]+': '+z[1]).join('\n')+'\n'+x.lines.map(l=>'- '+l.iname+' '+f(l.qty)+' × '+f(u(l))+' = '+f(l.qty*u(l))).join('\n')+'\n'+R.map(z=>z[0]+': '+z[1]).join('\n');
  sheet('فاتورة '+(sale?'بيع':'شراء')+' رقم '+no,'<div style="text-align:center;font-weight:700;margin-bottom:8px">متجري</div>'+H.map(rw).join('')
-  +'<h3>المنتجات</h3>'+x.lines.map(l=>`<div class="row" style="margin-bottom:0;border-radius:0"><div><b>${esc(l.iname)}</b><div class="sub">${f(l.qty)} × ${fm(u(l))}</div></div><b>${fm(l.qty*u(l))}</b></div>`).join('')
+  +'<h3>المنتجات</h3>'+tbl(x.lines,u,x.t+(x.disc||0))
   +'<h3>الحساب</h3>'+R.map(rw).join('')
   +'<div class="btns"><button id="sh1">مشاركة</button><button id="pr">طباعة / PDF</button></div><div class="btns">'+(open&&x.pid?'<button id="py">تسجيل دفعة</button>':'')+(x.pid?'<button id="pf">'+(sale?'ملف العميل':'ملف المورد')+'</button>':'')+'<button id="dl">حذف</button></div>',()=>null,'إغلاق');
  $('#sh1').onclick=()=>{if(navigator.share)navigator.share({title:'فاتورة '+no,text:txt}).catch(()=>{});else{try{navigator.clipboard.writeText(txt);$('#err').textContent='تم نسخ الفاتورة.'}catch(e){}}};
@@ -215,16 +226,16 @@ function showInv(k,no){const x=calc(k).find(y=>y.no===no);if(!x)return;
 function partyDlg(k,id){const o=S[k].find(x=>x.id===id);if(!o)return;const sk=k==='customers'?'sales':'purchases',L=calc(sk).filter(x=>x.pid===id).reverse();
  sheet(esc(o.name),`<p class="sub">${esc(o.phone)||'بدون رقم'} · ${L.length} فاتورة · ${k==='customers'?'عليه':'عليك'}: ${fm(debt(k,id))}</p>`
   +L.slice(0,6).map(x=>`<div class="row" data-inv="${sk}:${x.no}"><div><b>فاتورة ${x.no}</b><div class="sub">${x.date} · ${fm(x.t)}</div></div><span class="tag ${x.r>0.005?'low':''}">${x.r>0.005?'متبقي '+fm(x.r):'مسددة'}</span></div>`).join('')
-  +'<div class="btns"><button id="b1">فاتورة جديدة</button><button id="b2">تسجيل دفعة</button></div><div class="btns"><button id="b3">كل الفواتير</button><button id="b4">تعديل</button></div>',()=>null,'إغلاق');
- $('#b1').onclick=()=>inv(sk,id);$('#b2').onclick=()=>pay(k,id);$('#b4').onclick=()=>edit(k,id);
+  +'<div class="btns"><button id="b1">فاتورة جديدة</button><button id="b2">تسجيل دفعة</button></div><div class="btns"><button id="b3">كل الفواتير</button><button id="b4">تعديل</button></div><div class="btns"><button id="b5" class="dl">🗑 حذف '+(k==='customers'?'العميل':'المورد')+' (تبقى فواتيره محفوظة)</button></div>',()=>null,'إغلاق');
+ $('#b1').onclick=()=>inv(sk,id);$('#b2').onclick=()=>pay(k,id);$('#b4').onclick=()=>edit(k,id);two($('#b5'),()=>{S[k]=S[k].filter(x=>x.id!==id);save();$('#ov').classList.remove('on');render()});
  $('#b3').onclick=()=>{invP=id;invK=sk;invF='all';open_('invoices')};}
 function itemDlg(id){const o=S.items.find(x=>x.id===id);if(!o)return;const H=[];
  S.sales.forEach(x=>x.lines.filter(l=>l.iid===id).forEach(l=>H.push([x.date,'بيع',l.qty,'sales',x.no])));
  S.purchases.forEach(x=>x.lines.filter(l=>l.iid===id).forEach(l=>H.push([x.date,'شراء',l.qty,'purchases',x.no])));
  H.sort((a,b)=>a[0]<b[0]?1:-1);
  sheet(esc(o.name),`<p class="sub">المخزون: ${f(o.qty)} · تكلفة ${fm(o.cost)} · بيع ${fm(o.price)}</p>`+(H.length?H.slice(0,6).map(h=>`<div class="row" data-inv="${h[3]}:${h[4]}"><span>${h[1]} · ${h[0]}</span><b>${f(h[2])}</b></div>`).join(''):'<p class="sub">لا توجد حركات بعد.</p>')
-  +'<div class="btns"><button id="b1">بيع</button><button id="b2">شراء</button><button id="b4">تعديل</button></div>',()=>null,'إغلاق');
- $('#b1').onclick=()=>inv('sales',null,id);$('#b2').onclick=()=>inv('purchases',null,id);$('#b4').onclick=()=>edit('items',id)}
+  +'<div class="btns"><button id="b1">بيع</button><button id="b2">شراء</button><button id="b4">تعديل</button></div><div class="btns"><button id="b5" class="dl">🗑 حذف المنتج</button></div>',()=>null,'إغلاق');
+ $('#b1').onclick=()=>inv('sales',null,id);$('#b2').onclick=()=>inv('purchases',null,id);$('#b4').onclick=()=>edit('items',id);two($('#b5'),()=>{S.items=S.items.filter(x=>x.id!==id);save();$('#ov').classList.remove('on');render()})}
 
 const party=(k,c)=>{const sk=k==='customers'?'sales':'purchases',t=sum(calc(sk).filter(x=>x.pid===c.id),x=>x.t),d=debt(k,c.id);
  return `<div class="row" data-dt="${k}:${c.id}"><div><b>${esc(c.name)}</b><div class="sub">${esc(c.phone)||'بدون رقم'}${d>0?` · <span style="color:var(--wr);font-weight:700">${k==='customers'?'عليه':'عليك'} ${fm(d)}</span>`:''}</div>${del(k,c.id)}</div><span class="tag">${fm(t)}</span></div>`};
@@ -236,7 +247,7 @@ function invList(k,ch){const A=calc(k).reverse();
   +`<div class="grid"><div class="card"><small>عدد الفواتير</small><strong>${A.length}</strong></div><div class="card"><small>غير مسددة</small><strong>${np}</strong></div><div class="card"><small>الإجمالي</small><strong>${fm(T)}</strong></div><div class="card"><small>المتبقي</small><strong style="color:var(--wr)">${fm(RM)}</strong></div></div>`
   +'<div class="chips">'+c1(invF==='all','all','الكل')+c1(invF==='paid','paid','مسددة')+c1(invF==='unpaid','unpaid','غير مسددة')+'</div>'
   +(invP?'<div class="chips">'+c1(1,'clrP',esc(pn||'')+' ✕')+'</div>':'')
-  +L.map(x=>`<div class="row" data-inv="${k}:${x.no}"><div><b>فاتورة ${x.no} · ${esc(x.pname)}</b><div class="sub">${x.date} · ${x.lines.length} منتج · ${fm(x.t)}</div></div><span class="tag ${x.r>0.005?'low':''}">${x.r>0.005?'متبقي '+fm(x.r):'مسددة'}</span></div>`).join('')
+  +L.map(x=>`<div class="row" data-inv="${k}:${x.no}"><div><b>فاتورة ${x.no} · ${esc(x.pname)}</b><div class="sub">${x.date} · ${x.lines.length} منتج · ${fm(x.t)}</div><button class="x dl ${pend==='i'+k+x.no?'sure':''}" data-dinv="${k}:${x.no}">${pend==='i'+k+x.no?'⚠ اضغط للتأكيد':'🗑 حذف'}</button></div><span class="tag ${x.r>0.005?'low':''}">${x.r>0.005?'متبقي '+fm(x.r):'مسددة'}</span></div>`).join('')
   +(L.length?'':empty(A.length?'لا نتائج.':'لا توجد فواتير بعد.<br>اضغط + لإنشاء فاتورة.'))}
 
 const views={
@@ -287,6 +298,7 @@ document.addEventListener('click',e=>{
  else if(t.id==='fab')add();
  else if(t.hasAttribute('data-close'))$('#ov').classList.remove('on');
  else if(t.dataset.del){const a=t.dataset.del.split(':');if(pend===a[0]+a[1]){S[a[0]]=S[a[0]].filter(x=>x.id!==a[1]);pend=null;save()}else pend=a[0]+a[1];render()}
+ else if(t.dataset.dinv){const a=t.dataset.dinv.split(':'),key='i'+a[0]+a[1];if(pend===key){rmInv(a[0],+a[1]);pend=null}else pend=key;render()}
  else if(t.dataset.flt){const z=t.dataset.flt;if(z==='clrP')invP='';else if(z[0]==='k')invK=z.slice(1);else invF=z;render()}
  else if(t.hasAttribute('data-backup'))backup();
 });
