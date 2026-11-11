@@ -63,6 +63,13 @@ input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid v
 body{font-weight:var(--fw,400)}
 #zz,#zs{zoom:var(--z,1)}
 input[type=range]{padding:6px 0;accent-color:var(--ac)}
+.grp{background:var(--sf);border:1px solid var(--ln);border-radius:14px;margin-bottom:14px;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.12)}
+.gh{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:var(--hd);color:var(--hdt);cursor:pointer}
+.gh b{font-size:16px}.gh span{font-size:12.5px;opacity:.85}
+.grp .row{margin:0;border:0;border-radius:0;border-bottom:1px solid var(--ln)}
+.gl{padding:8px 14px 0;font-size:12.5px;font-weight:700;color:var(--mut);background:var(--bg)}
+.gs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:6px 10px 12px;background:var(--bg);text-align:center}
+.gs small{display:block;color:var(--mut);font-size:12px}.gs b{font-size:15px}
 .iv h4{margin:10px 10px 4px;font-size:14px}
 .iv table.c td{text-align:center!important}
 .iv tr[data-inv]{cursor:pointer}
@@ -109,7 +116,11 @@ main.hm{display:block;padding:14px 14px 28px;overflow-y:auto}
 .tile.wide .pic{height:170px;font-size:76px}
 .tile .pic::before{content:"";position:absolute;inset:0 0 52% 0;background:linear-gradient(rgba(255,255,255,.42),rgba(255,255,255,0));border-radius:22px 22px 60% 60%/22px 22px 36% 36%}
 .tile .pic::after{content:"";position:absolute;width:70%;height:16px;bottom:10px;background:radial-gradient(rgba(0,0,0,.28),transparent 70%)}
-.tile .pic span{position:relative;z-index:1;transform:translateY(-4px) rotate(-5deg) scale(1.06);filter:drop-shadow(0 7px 5px rgba(0,0,0,.45))}
+.tile .pic{padding-bottom:30px}
+.tile .pic span{position:relative;z-index:1;transform:translateY(-2px) rotate(-5deg) scale(1.04);filter:drop-shadow(0 7px 5px rgba(0,0,0,.45))}
+.tile .pic i{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:20px 8px 9px;font-style:normal;font-weight:700;font-size:17px;letter-spacing:.2px;color:#fff;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,.65);background:linear-gradient(transparent,rgba(0,0,0,.5))}
+.tile.wide .pic i{font-size:20px;padding-top:26px}
+.tile .pic::after{display:none}
 .tile:active .pic{transform:translateY(7px);box-shadow:0 1px 0 var(--sd),0 4px 8px rgba(0,0,0,.3),inset 0 3px 0 rgba(255,255,255,.45),inset 0 -14px 22px rgba(0,0,0,.2)}
 .tile.warn small{color:var(--wr);font-weight:700}
 .chips{display:flex;gap:8px;margin-bottom:12px}
@@ -189,10 +200,10 @@ function settings(){const c=S.cfg;
    +'<p class="sub" style="margin-top:12px">كل تغيير يُحفظ تلقائيًا.</p>',()=>{live()},'تم');
   ['sf','sz','sc'].forEach(id=>$('#'+id).onchange=live);['cu','sn','sl'].forEach(id=>$('#'+id).oninput=live);
   const x=document.querySelector('#sh [data-close]');if(x)x.style.display='none';}
-function homeHTML(){const A=calc('sales').filter(x=>x.r>0.005).length;
-  const T=[['items','مخزن المنتجات','📦',S.items.length+' منتج','#0F766E','#2DD4BF','wide'],['purchases','شراء','🛒',S.purchases.length+' عملية','#1D4ED8','#60A5FA',''],['sales','بيع','💰',S.sales.length+' عملية','#B45309','#FBBF24',''],['suppliers','الموردون','🚚',S.suppliers.length+' مورد','#6D28D9','#A78BFA',''],['customers','العملاء','👥',S.customers.length+' عميل','#BE185D','#F472B6',''],['invoices','الفواتير','🧾',S.sales.length?(A?A+' غير مسددة':'كلها مسددة'):'لا توجد فواتير','#374151','#9CA3AF',''],['stats','التحليل','📊','الأرباح والإحصاءات','#047857','#6EE7B7','']];
-  const tl=(x,a)=>`<button class="tile ${x[6]} ${x[0]==='invoices'&&A?'warn':''}" ${a}><div class="pic" style="background:linear-gradient(160deg,${x[5]},${x[4]});--sd:color-mix(in srgb,${x[4]} 62%,#000)"><span>${x[2]}</span></div><b>${x[1]}</b><small>${x[3]}</small></button>`;
-  return '<div class="home">'+T.map(x=>tl(x,'data-tab="'+x[0]+'"')).join('')+tl(['','الإعدادات','⚙️','الخط والعملة','#475569','#CBD5E1',''],'data-set')+'</div>'}
+function homeHTML(){
+  const T=[['items','مخزن المنتجات','📦','#0F766E','#2DD4BF','wide'],['purchases','شراء','🛒','#1D4ED8','#60A5FA',''],['sales','بيع','💰','#B45309','#FBBF24',''],['suppliers','الموردون','🚚','#6D28D9','#A78BFA',''],['customers','العملاء','👥','#BE185D','#F472B6',''],['invoices','الفواتير','🧾','#374151','#9CA3AF',''],['stats','التحليل','📊','#047857','#6EE7B7','']];
+  const tl=(x,a)=>`<button class="tile ${x[5]}" ${a}><div class="pic" style="background:linear-gradient(160deg,${x[4]},${x[3]});--sd:color-mix(in srgb,${x[3]} 62%,#000)"><span>${x[2]}</span><i>${x[1]}</i></div></button>`;
+  return '<div class="home">'+T.map(x=>tl(x,'data-tab="'+x[0]+'"')).join('')+tl(['','الإعدادات','⚙️','#475569','#CBD5E1',''],'data-set')+'</div>'}
 const tbl=(L,u,T,rm)=>'<div style="overflow-x:auto"><table class="tb"><tr><th>#</th><th>المنتج</th><th>الكمية</th><th>السعر</th><th>الحاصل</th>'+(rm?'<th></th>':'')+'</tr>'
  +L.map((l,i)=>`<tr><td>${i+1}</td><td>${esc(l.iname)}${rm&&!l.iid?' <small>(جديد)</small>':''}</td><td>${f(l.qty)}</td><td>${f(u(l))}</td><td>${f(l.qty*u(l))}</td>${rm?`<td><button class="x dl" data-rm="${i}">✕</button></td>`:''}</tr>`).join('')
  +`<tr class="tt"><td colspan="4">المجموع</td><td>${fm(T)}</td>${rm?'<td></td>':''}</tr></table></div>`;
@@ -291,15 +302,20 @@ function itemDlg(id){const o=S.items.find(x=>x.id===id);if(!o)return;const H=[];
 
 const party=(k,c)=>{const sk=k==='customers'?'sales':'purchases',t=sum(calc(sk).filter(x=>x.pid===c.id),x=>x.t),d=debt(k,c.id);
  return `<div class="row" data-dt="${k}:${c.id}"><div><b>${esc(c.name)}</b><div class="sub">${esc(c.phone)||'بدون رقم'}${d>0?` · <span style="color:var(--wr);font-weight:700">${k==='customers'?'عليه':'عليك'} ${fm(d)}</span>`:''}</div>${del(k,c.id)}</div><span class="tag">${fm(t)}</span></div>`};
-function invList(k,ch){const A=calc(k).reverse();
+function invList(k,ch){const A=calc(k).reverse(),sale=k==='sales',pk=PK[k];
  const L=A.filter(x=>(invF==='all'||(invF==='paid'?x.r<=0.005:x.r>0.005))&&(!invP||x.pid===invP)&&m(x.pname,x.date,String(x.no),x.lines.map(l=>l.iname).join(' ')));
  const T=sum(A,x=>x.t),RM=sum(A,x=>Math.max(0,x.r)),np=A.filter(x=>x.r>0.005).length;
  const c1=(a,b,c)=>`<button class="chip ${a?'on':''}" data-flt="${b}">${c}</button>`,pn=invP&&(S.customers.concat(S.suppliers).find(x=>x.id===invP)||{}).name;
+ const rowH=(x,g)=>`<div class="row" data-inv="${k}:${x.no}"><div><b>فاتورة ${String(x.no).padStart(6,'0')}${g?'':' · '+esc(x.pname)}</b><div class="sub">${x.date} · ${x.lines.length} منتج · ${fm(x.t)}</div><button class="x dl ${pend==='i'+k+x.no?'sure':''}" data-dinv="${k}:${x.no}">${pend==='i'+k+x.no?'⚠ اضغط للتأكيد':'🗑 حذف'}</button></div><span class="tag ${x.r>0.005?'low':''}">${x.r>0.005?'متبقي '+fm(x.r):'مسددة'}</span></div>`;
+ const G=[],seen={};L.forEach(x=>{if(!x.pid)G.push({L:[x]});else{if(!seen[x.pid]){seen[x.pid]={pid:x.pid,name:x.pname,L:[]};G.push(seen[x.pid])}seen[x.pid].L.push(x)}});
+ const grp=g=>{if(g.L.length<2)return rowH(g.L[0],0);
+  const all=A.filter(x=>x.pid===g.pid),t=sum(all,x=>x.t),p=sum(all,x=>x.p),r=Math.max(0,sum(all,x=>x.r)),nm=(S[pk].find(c=>c.id===g.pid)||{}).name||g.name;
+  return `<div class="grp"><div class="gh" data-dt="${pk}:${g.pid}"><b>${esc(nm)}</b><span>كشف الحساب ←</span></div>${g.L.slice().reverse().map(x=>rowH(x,1)).join('')}<div class="gl">ملخص معاملات ${sale?'العميل':'المورد'} (${all.length} فواتير)</div><div class="gs"><div><small>المبلغ الكلي</small><b>${fm(t)}</b></div><div><small>المدفوع</small><b style="color:#15803D">${fm(p)}</b></div><div><small>المتبقي</small><b style="color:#B91C1C">${fm(r)}</b></div></div></div>`};
  return (ch?'<div class="chips">'+c1(k==='sales','ksales','فواتير البيع')+c1(k==='purchases','kpurchases','فواتير الشراء')+'</div>':'')
   +`<div class="grid"><div class="card"><small>عدد الفواتير</small><strong>${A.length}</strong></div><div class="card"><small>غير مسددة</small><strong>${np}</strong></div><div class="card"><small>الإجمالي</small><strong>${fm(T)}</strong></div><div class="card"><small>المتبقي</small><strong style="color:var(--wr)">${fm(RM)}</strong></div></div>`
   +'<div class="chips">'+c1(invF==='all','all','الكل')+c1(invF==='paid','paid','مسددة')+c1(invF==='unpaid','unpaid','غير مسددة')+'</div>'
   +(invP?'<div class="chips">'+c1(1,'clrP',esc(pn||'')+' ✕')+'</div>':'')
-  +L.map(x=>`<div class="row" data-inv="${k}:${x.no}"><div><b>فاتورة ${x.no} · ${esc(x.pname)}</b><div class="sub">${x.date} · ${x.lines.length} منتج · ${fm(x.t)}</div><button class="x dl ${pend==='i'+k+x.no?'sure':''}" data-dinv="${k}:${x.no}">${pend==='i'+k+x.no?'⚠ اضغط للتأكيد':'🗑 حذف'}</button></div><span class="tag ${x.r>0.005?'low':''}">${x.r>0.005?'متبقي '+fm(x.r):'مسددة'}</span></div>`).join('')
+  +G.map(grp).join('')
   +(L.length?'':empty(A.length?'لا نتائج.':'لا توجد فواتير بعد.<br>اضغط + لإنشاء فاتورة.'))}
 
 const views={
