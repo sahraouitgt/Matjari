@@ -68,6 +68,8 @@ input[type=range]{padding:6px 0;accent-color:var(--ac)}
 .iv tr[data-inv]{cursor:pointer}
 .iv{background:linear-gradient(#fff,#EEF4FF);color:#0B2A66;border-radius:12px;overflow:hidden;border:1px solid #C9D6EE;font-size:14px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .iv .hd{background:#0B2A66;color:#fff;text-align:center;padding:14px 10px;border-bottom:4px solid #D4A72C}
+.iv .hd{position:relative}.iv .hd.hs{padding-inline:96px}
+.iv .stk{position:absolute;top:8px;left:8px;max-width:86px;padding:5px 8px;font-size:11px;line-height:1.25;font-weight:700;color:#0B2A66;background:linear-gradient(135deg,#FBE08A,#D4A72C);border:1px solid #fff8;border-radius:10px;transform:rotate(-7deg);box-shadow:0 3px 6px rgba(0,0,0,.35)}
 .iv .hd b{display:block;font-size:20px}.iv .hd small{color:#F2C94C;font-size:13px}
 .iv .tt1{margin:12px auto;width:max-content;background:#0B2A66;color:#fff;padding:6px 28px;border-radius:18px;font-weight:700;font-size:17px;border:2px solid #D4A72C}
 .iv .inf{display:grid;grid-template-columns:1fr 1fr;gap:7px 12px;margin:0 10px 10px;padding:10px;background:#EAF1FD;border:1px solid #C9D6EE;border-radius:10px}
@@ -101,15 +103,14 @@ main.hm{display:block;padding:14px 14px 28px;overflow-y:auto}
 .home{display:grid;grid-template-columns:1fr 1fr;gap:18px 14px}
 .tile{display:flex;flex-direction:column;gap:7px;background:none;border:0;padding:0;color:var(--ink);font:inherit;text-align:start;cursor:pointer;min-width:0}
 .tile.wide{grid-column:1/-1}
-.tile .pic{height:128px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:56px;position:relative;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.2)}
-.tile.wide .pic{height:170px;font-size:72px}
-.tile .pic::before,.tile .pic::after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.16)}
-.tile .pic::before{width:120px;height:120px;top:-40px;inset-inline-start:-30px}
-.tile .pic::after{width:90px;height:90px;bottom:-35px;inset-inline-end:-20px}
-.tile .pic span{position:relative;filter:drop-shadow(0 3px 4px rgba(0,0,0,.25))}
-.tile b{font-size:16px}
-.tile small{color:var(--mut);font-size:12.5px;margin-top:-5px}
-.tile:active .pic{transform:scale(.98)}
+.tile{padding-bottom:9px}
+.tile .pic{height:128px;border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:58px;position:relative;overflow:hidden;transition:transform .12s,box-shadow .12s;
+ box-shadow:0 8px 0 var(--sd),0 14px 16px rgba(0,0,0,.3),inset 0 3px 0 rgba(255,255,255,.55),inset 0 -14px 22px rgba(0,0,0,.2)}
+.tile.wide .pic{height:170px;font-size:76px}
+.tile .pic::before{content:"";position:absolute;inset:0 0 52% 0;background:linear-gradient(rgba(255,255,255,.42),rgba(255,255,255,0));border-radius:22px 22px 60% 60%/22px 22px 36% 36%}
+.tile .pic::after{content:"";position:absolute;width:70%;height:16px;bottom:10px;background:radial-gradient(rgba(0,0,0,.28),transparent 70%)}
+.tile .pic span{position:relative;z-index:1;transform:translateY(-4px) rotate(-5deg) scale(1.06);filter:drop-shadow(0 7px 5px rgba(0,0,0,.45))}
+.tile:active .pic{transform:translateY(7px);box-shadow:0 1px 0 var(--sd),0 4px 8px rgba(0,0,0,.3),inset 0 3px 0 rgba(255,255,255,.45),inset 0 -14px 22px rgba(0,0,0,.2)}
 .tile.warn small{color:var(--wr);font-weight:700}
 .chips{display:flex;gap:8px;margin-bottom:12px}
 .chip{flex:1;font:inherit;padding:8px;border-radius:20px;border:1px solid var(--ln);background:var(--sf);color:var(--ink);cursor:pointer}
@@ -180,17 +181,17 @@ function applyCfg(){const c=S.cfg=Object.assign({cur:'دينار',font:'Tajawal'
   document.body.style.fontFamily=c.font==='system-ui'?'system-ui,Tahoma,sans-serif':`'${c.font}',system-ui,Tahoma,sans-serif`;
   r.style.setProperty('--z',c.z);r.style.setProperty('--fw',['400','500','700'][c.c]||'400');r.setAttribute('data-c',c.c);}
 function settings(){const c=S.cfg;
-  const live=()=>{c.font=v('sf');c.z=parseFloat($('#sz').value)||1;c.c=+v('sc');applyCfg();save()};
+  const live=()=>{c.font=v('sf');c.z=parseFloat($('#sz').value)||1;c.c=+v('sc');c.cur=v('cu')||'دينار';c.shop=v('sn')||'متجري';c.slogan=v('sl');applyCfg();save();render()};
   sheet('الإعدادات',sel('sf','نوع الخط',FONTS.map(x=>`<option value="${x[0]}" ${c.font===x[0]?'selected':''}>${x[1]}</option>`).join(''))
    +`<label for="sz">حجم الخط</label><input id="sz" type="range" min="0.85" max="1.5" step="0.05" value="${c.z}">`
    +sel('sc','وضوح الخط',[['0','عادي'],['1','واضح'],['2','واضح جدًا (عريض)']].map(x=>`<option value="${x[0]}" ${+c.c===+x[0]?'selected':''}>${x[1]}</option>`).join(''))
-   +fld('cu','العملة (مثل: دج)','text',c.cur)+fld('sn','اسم المتجر (يظهر في الفاتورة)','text',c.shop||'متجري')+fld('sl','عبارة المتجر (اختياري)','text',c.slogan||'')
-   +'<div class="card" style="margin-top:12px"><small>معاينة</small><b>فاتورة رقم 12 — 4,500</b></div>',
-   ()=>{live();c.cur=v('cu')||'دينار';c.shop=v('sn')||'متجري';c.slogan=v('sl');applyCfg()},'حفظ');
-  ['sf','sz','sc'].forEach(id=>$('#'+id).onchange=live);}
+   +fld('cu','العملة (مثل: دج)','text',c.cur)+fld('sn','اسم المتجر (يظهر في الفاتورة)','text',c.shop||'متجري')+fld('sl','عبارة المتجر (تظهر كملصق على الفاتورة)','text',c.slogan||'')
+   +'<p class="sub" style="margin-top:12px">كل تغيير يُحفظ تلقائيًا.</p>',()=>{live()},'تم');
+  ['sf','sz','sc'].forEach(id=>$('#'+id).onchange=live);['cu','sn','sl'].forEach(id=>$('#'+id).oninput=live);
+  const x=document.querySelector('#sh [data-close]');if(x)x.style.display='none';}
 function homeHTML(){const A=calc('sales').filter(x=>x.r>0.005).length;
   const T=[['items','مخزن المنتجات','📦',S.items.length+' منتج','#0F766E','#2DD4BF','wide'],['purchases','شراء','🛒',S.purchases.length+' عملية','#1D4ED8','#60A5FA',''],['sales','بيع','💰',S.sales.length+' عملية','#B45309','#FBBF24',''],['suppliers','الموردون','🚚',S.suppliers.length+' مورد','#6D28D9','#A78BFA',''],['customers','العملاء','👥',S.customers.length+' عميل','#BE185D','#F472B6',''],['invoices','الفواتير','🧾',S.sales.length?(A?A+' غير مسددة':'كلها مسددة'):'لا توجد فواتير','#374151','#9CA3AF',''],['stats','التحليل','📊','الأرباح والإحصاءات','#047857','#6EE7B7','']];
-  const tl=(x,a)=>`<button class="tile ${x[6]} ${x[0]==='invoices'&&A?'warn':''}" ${a}><div class="pic" style="background:linear-gradient(135deg,${x[4]},${x[5]})"><span>${x[2]}</span></div><b>${x[1]}</b><small>${x[3]}</small></button>`;
+  const tl=(x,a)=>`<button class="tile ${x[6]} ${x[0]==='invoices'&&A?'warn':''}" ${a}><div class="pic" style="background:linear-gradient(160deg,${x[5]},${x[4]});--sd:color-mix(in srgb,${x[4]} 62%,#000)"><span>${x[2]}</span></div><b>${x[1]}</b><small>${x[3]}</small></button>`;
   return '<div class="home">'+T.map(x=>tl(x,'data-tab="'+x[0]+'"')).join('')+tl(['','الإعدادات','⚙️','الخط والعملة','#475569','#CBD5E1',''],'data-set')+'</div>'}
 const tbl=(L,u,T,rm)=>'<div style="overflow-x:auto"><table class="tb"><tr><th>#</th><th>المنتج</th><th>الكمية</th><th>السعر</th><th>الحاصل</th>'+(rm?'<th></th>':'')+'</tr>'
  +L.map((l,i)=>`<tr><td>${i+1}</td><td>${esc(l.iname)}${rm&&!l.iid?' <small>(جديد)</small>':''}</td><td>${f(l.qty)}</td><td>${f(u(l))}</td><td>${f(l.qty*u(l))}</td>${rm?`<td><button class="x dl" data-rm="${i}">✕</button></td>`:''}</tr>`).join('')
@@ -251,7 +252,7 @@ function showInv(k,no){const x=calc(k).find(y=>y.no===no);if(!x)return;
  const sale=k==='sales',open=x.r>0.005,u=l=>sale?l.price:l.cost,c=S[sale?'customers':'suppliers'].find(y=>y.id===x.pid),sn=S.cfg.shop||'متجري',num=String(no).padStart(6,'0'),ph=(c&&c.phone)||'—',cu=S.cfg.cur||'دينار';
  const txt=sn+' - فاتورة '+(sale?'بيع':'شراء')+' رقم '+num+'\nالتاريخ: '+x.date+(x.time?' '+x.time:'')+'\n'+(sale?'العميل: ':'المورد: ')+x.pname+'\n'+x.lines.map((l,i)=>(i+1)+'. '+l.iname+' '+f(l.qty)+' × '+f(u(l))+' = '+f(l.qty*u(l))).join('\n')+(x.disc?'\nالخصم: '+fm(x.disc):'')+'\nالمجموع الكلي: '+fm(x.t)+'\nالمدفوع: '+fm(x.p)+'\nالمتبقي: '+fm(Math.max(0,x.r));
  const PL=x.pl.length?`<h4>سجل الدفعات</h4><table class="c"><tr><th style="width:8%">#</th><th style="width:24%">التاريخ</th><th style="width:16%">الساعة</th><th style="width:22%">المبلغ</th><th style="width:30%">التفاصيل</th></tr>${x.pl.map((q,i)=>`<tr><td>${i+1}</td><td>${esc(q.d)}</td><td>${q.h||'—'}</td><td>${f(q.a)}</td><td>${esc(q.n)}</td></tr>`).join('')}</table>`:'';
- sheet('الفاتورة',`<div class="iv"><div class="hd"><b>${esc(sn)}</b>${S.cfg.slogan?`<small>${esc(S.cfg.slogan)}</small>`:''}</div><div class="tt1">فاتورة ${sale?'بيع':'شراء'}</div>
+ sheet('الفاتورة',`<div class="iv"><div class="hd ${S.cfg.slogan?'hs':''}"><b>${esc(sn)}</b>${S.cfg.slogan?`<span class="stk">${esc(S.cfg.slogan)}</span>`:''}</div><div class="tt1">فاتورة ${sale?'بيع':'شراء'}</div>
 <div class="inf"><div><span>رقم الفاتورة</span><b style="color:#C0392B">${num}</b></div><div><span>${sale?'اسم العميل':'اسم المورد'}</span><b>${esc(x.pname)}</b></div><div><span>التاريخ</span><b>${esc(x.date.replace(/-/g,'/'))}</b></div><div><span>رقم الهاتف</span><b>${esc(ph)}</b></div><div><span>الساعة</span><b>${x.time||'—'}</b></div><div><span>الحالة</span><b>${open?'غير مسددة':'مسددة'}</b></div></div>
 <table><tr><th style="width:8%">#</th><th style="width:30%">السلعة</th><th style="width:13%">الكمية</th><th style="width:25%">سعر الوحدة<small>${esc(cu)}</small></th><th style="width:24%">الناتج<small>${esc(cu)}</small></th></tr>${x.lines.map((l,i)=>`<tr><td>${i+1}</td><td>${esc(l.iname)}</td><td>${f(l.qty)}</td><td>${f(u(l))}</td><td>${f(l.qty*u(l))}</td></tr>`).join('')}</table>${PL}
 <div class="tot">${x.disc?`<div><span style="background:#64748B">الخصم</span><b>${fm(x.disc)}</b></div>`:''}<div class="t1"><span>المجموع الكلي</span><b>${fm(x.t)}</b></div><div class="t2"><span>المبلغ المدفوع</span><b>${fm(x.p)}</b></div><div class="t3"><span>المبلغ المتبقي</span><b>${fm(Math.max(0,x.r))}</b></div></div>
@@ -267,7 +268,7 @@ function partyDlg(k,id){const o=S[k].find(x=>x.id===id);if(!o)return;
  const cus=k==='customers',sk=cus?'sales':'purchases',L=calc(sk).filter(x=>x.pid===id),PY=S.pays.filter(p=>p.kind===k&&p.pid===id),
   T=sum(L,x=>x.t),Pd=sum(L,x=>x.p),Rm=Math.max(0,sum(L,x=>x.r)),sn=S.cfg.shop||'متجري',cu=S.cfg.cur||'دينار',pad=n=>String(n).padStart(6,'0');
  const txt=sn+' - كشف حساب '+(cus?'العميل: ':'المورد: ')+o.name+'\n'+L.map(x=>pad(x.no)+' | '+x.date+' | '+f(x.t)+' | '+f(x.p)+' | '+f(Math.max(0,x.r))).join('\n')+(PY.length?'\nالدفعات:\n'+PY.map(q=>q.date+' '+(q.time||'')+' | '+f(q.amount)+(q.note?' | '+q.note:'')).join('\n'):'')+'\nالمبلغ الكلي: '+fm(T)+'\nالمدفوع: '+fm(Pd)+'\nالمتبقي: '+fm(Rm);
- sheet(esc(o.name),`<div class="iv"><div class="hd"><b>${esc(sn)}</b></div><div class="tt1">كشف حساب ${cus?'عميل':'مورد'}</div>
+ sheet(esc(o.name),`<div class="iv"><div class="hd ${S.cfg.slogan?'hs':''}"><b>${esc(sn)}</b>${S.cfg.slogan?`<span class="stk">${esc(S.cfg.slogan)}</span>`:''}</div><div class="tt1">كشف حساب ${cus?'عميل':'مورد'}</div>
 <div class="inf"><div><span>${cus?'اسم العميل':'اسم المورد'}</span><b>${esc(o.name)}</b></div><div><span>رقم الهاتف</span><b>${esc(o.phone)||'—'}</b></div><div><span>عدد الفواتير</span><b>${L.length}</b></div><div><span>تاريخ الكشف</span><b>${today().replace(/-/g,'/')}</b></div></div>
 <h4>الفواتير (اضغط على فاتورة لفتحها)</h4>
 <table class="c"><tr><th style="width:21%">الفاتورة</th><th style="width:21%">التاريخ</th><th style="width:20%">المبلغ<small>${esc(cu)}</small></th><th style="width:19%">المدفوع</th><th style="width:19%">المتبقي</th></tr>${L.map(x=>`<tr data-inv="${sk}:${x.no}"><td>${pad(x.no)}</td><td>${esc(x.date)}</td><td>${f(x.t)}</td><td>${f(x.p)}</td><td style="color:#B91C1C;font-weight:700">${f(Math.max(0,x.r))}</td></tr>`).join('')||'<tr><td colspan="5">لا توجد فواتير بعد.</td></tr>'}</table>
