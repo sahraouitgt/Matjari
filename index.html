@@ -108,6 +108,7 @@ input,select,textarea{min-height:46px;border-radius:12px;font-size:16px}
 .iv .tot b{padding:8px 10px;font-size:16px;flex:1;text-align:center}
 .iv .t1 span{background:#0B2A66}.iv .t2 span{background:#15803D}.iv .t3 span{background:#B91C1C}.iv .t3 b{color:#B91C1C}
 .iv .ft{text-align:center;padding:10px;border-top:3px solid #D4A72C;background:#0B2A66;color:#fff}
+.tb.lt td{text-align:center!important;font-size:13px}
 .tb.ed{table-layout:fixed}
 .tb.ed th:nth-child(1){width:7%}.tb.ed th:nth-child(3){width:15%}.tb.ed th:nth-child(4){width:19%}.tb.ed th:nth-child(5){width:16%}.tb.ed th:nth-child(6){width:9%}
 .tb.ed th{padding:7px 1px;font-size:12.5px;white-space:nowrap}
@@ -192,7 +193,7 @@ function sheet(title,body,ok,lab){
   $('#ok').onclick=()=>{const m=ok();if(m)$('#err').textContent=m;else{save();$('#ov').classList.remove('on');render();if(!/إغلاق/.test(lab||''))toast('تم الحفظ ✓')}};
 }
 function edit(k,id){const o=S[k].find(x=>x.id===id);if(!o)return;
- if(k==='items')sheet('تعديل المنتج',fld('a','اسم المنتج','text',o.name)+fld('b','الكمية','number',o.qty)+fld('c','سعر الشراء (التكلفة)','number',o.cost)+fld('d','سعر البيع','number',o.price),()=>{if(!v('a'))return'اكتب اسم المنتج.';Object.assign(o,{name:v('a'),qty:nv('b'),cost:nv('c'),price:nv('d')})});
+ if(k==='items')sheet('تعديل المنتج',fld('a','اسم المنتج','text',o.name)+fld('b','الكمية','number',o.qty)+fld('c','سعر الشراء (التكلفة)','number',o.cost)+fld('d','سعر البيع','number',o.price),()=>{if(!v('a'))return'اكتب اسم المنتج.';{const oq=o.qty,oc=o.cost;Object.assign(o,{name:v('a'),qty:nv('b'),cost:nv('c'),price:nv('d')});if(o.qty!==oq||o.cost!==oc)o.lots=o.qty>0?[{q:o.qty,c:o.cost,d:today(),s:''}]:[]}});
  else{const cus=k==='customers';sheet(cus?'تعديل بيانات العميل':'تعديل المورد',fld('a',cus?'الاسم':'اسم المورد','text',cus&&o.fn!==undefined?o.fn:o.name)+(cus?fld('l','اللقب','text',o.ln||''):'')+fld('b','رقم الهاتف','tel',o.phone),()=>{
   if(!v('a')&&!(cus&&v('l')))return cus?'اكتب اسم ولقب العميل.':'اكتب اسم المورد.';
   if(cus){o.fn=v('a');o.ln=v('l');o.name=(o.fn+' '+o.ln).trim()}else o.name=v('a');
@@ -224,6 +225,12 @@ function homeHTML(){
   const T=[['items','مخزن المنتجات','📦','#0F766E','#2DD4BF','wide'],['purchases','شراء','🛒','#1D4ED8','#60A5FA',''],['sales','بيع','💰','#B45309','#FBBF24',''],['suppliers','الموردون','🚚','#6D28D9','#A78BFA',''],['customers','العملاء','👥','#BE185D','#F472B6',''],['invoices','الفواتير','🧾','#374151','#9CA3AF',''],['stats','التحليل','📊','#047857','#6EE7B7','']];
   const tl=(x,a)=>`<button class="tile ${x[5]}" ${a}><div class="pic" style="background:linear-gradient(160deg,${x[4]},${x[3]});--sd:color-mix(in srgb,${x[3]} 62%,#000)"><span>${x[2]}</span><i>${x[1]}</i></div></button>`;
   return '<div class="home">'+T.map(x=>tl(x,'data-tab="'+x[0]+'"')).join('')+'</div>'}
+const lotsOf=it=>{if(!it.lots)it.lots=it.qty>0?[{q:it.qty,c:it.cost,d:'',s:''}]:[];return it.lots};
+function addLot(it,q,c,sp){const L=lotsOf(it),m=L.find(x=>Math.abs(x.c-c)<1e-9);if(m){m.q+=q;m.d=today();if(sp)m.s=sp}else L.push({q:q,c:c,d:today(),s:sp||''});it.qty+=q;it.cost=c}
+function takeLots(it,q){const L=lotsOf(it),used=[];let r=q;for(const x of L){if(r<=0)break;const t=Math.min(x.q,r);if(t>0){x.q-=t;r-=t;used.push({c:x.c,q:t})}}it.lots=L.filter(x=>x.q>1e-9);if(r>0)used.push({c:it.cost,q:r});it.qty-=q;return used}
+function giveBack(it,q,c){const L=lotsOf(it),m=L.find(x=>Math.abs(x.c-c)<1e-9);if(m)m.q+=q;else L.unshift({q:q,c:c,d:'',s:''});it.qty+=q}
+function pullLots(it,q,c){const L=lotsOf(it);let r=q;const m=L.find(x=>Math.abs(x.c-c)<1e-9);if(m){const t=Math.min(m.q,r);m.q-=t;r-=t}for(let i=L.length-1;i>=0&&r>0;i--){const t=Math.min(L[i].q,r);L[i].q-=t;r-=t}it.lots=L.filter(x=>x.q>1e-9);it.qty=Math.max(0,it.qty-q)}
+const lotsTbl=o=>{const L=lotsOf(o);return L.length?'<h3>دفعات المخزون (حسب سعر الشراء)</h3><table class="tb lt"><tr><th>#</th><th>الكمية</th><th>سعر الشراء</th><th>التاريخ</th><th>المورد</th></tr>'+L.map((x,i)=>`<tr><td>${i+1}</td><td>${f(x.q)}</td><td>${fm(x.c)}</td><td>${esc(x.d||'—')}</td><td>${esc(x.s||'—')}</td></tr>`).join('')+'</table>':''};
 const dt=x=>x.date.replace(/-/g,'/')+(x.time?' · '+x.time:'');
 const invLbl=(k,no)=>{const x=S[k].find(y=>y.no===no);return x?x.date.slice(5).replace('-','/')+(x.time?' '+x.time:''):'—'};
 function toast(m){let t=$('#toast');if(!t){document.body.insertAdjacentHTML('beforeend','<div id="toast"></div>');t=$('#toast')}t.textContent=m;t.className='on';clearTimeout(toast.t);toast.t=setTimeout(()=>{t.className=''},1800);try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}}
@@ -231,7 +238,10 @@ const tbl=(L,u,T,rm)=>'<div style="overflow-x:auto"><table class="tb"><tr><th>#<
  +L.map((l,i)=>`<tr><td>${i+1}</td><td>${esc(l.iname)}${rm&&!l.iid?' <small>(جديد)</small>':''}</td><td>${f(l.qty)}</td><td>${f(u(l))}</td><td>${f(l.qty*u(l))}</td>${rm?`<td><button class="x dl" data-rm="${i}">✕</button></td>`:''}</tr>`).join('')
  +`<tr class="tt"><td colspan="4">المجموع</td><td>${fm(T)}</td>${rm?'<td></td>':''}</tr></table></div>`;
 const two=(b,fn)=>{b.onclick=()=>{if(!b.dataset.s){b.dataset.s=1;b.textContent='⚠ اضغط للتأكيد';return}fn();toast('تم الحذف')}};
-function rmInv(k,no){const sale=k==='sales',x=S[k].find(y=>y.no===no);if(!x)return;x.lines.forEach(l=>{const it=S.items.find(t=>t.id===l.iid);if(it)it.qty=Math.max(0,it.qty+(sale?l.qty:-l.qty))});S[k]=S[k].filter(y=>y.no!==no);save()}
+function rmInv(k,no){const sale=k==='sales',x=S[k].find(y=>y.no===no);if(!x)return;
+ x.lines.forEach(l=>{const it=S.items.find(t=>t.id===l.iid);if(!it)return;
+  if(sale)(l.lt||[{c:l.cost,q:l.qty}]).slice().reverse().forEach(u=>giveBack(it,u.q,u.c));else pullLots(it,l.qty,l.cost)});
+ S[k]=S[k].filter(y=>y.no!==no);save()}
 function inv(k,pre,pi){const sale=k==='sales',P=sale?S.customers:S.suppliers,D={pid:pre||'',disc:'',paid:'',nn:'',np:'',lines:[]};
  const n0=x=>parseFloat(x)||0;
  const mk=id=>{const it=S.items.find(x=>x.id===id);return{iid:id||'',nw:'',qty:'',u:it?(sale?it.price:it.cost):'',sp:it?it.price:''}};
@@ -264,8 +274,8 @@ function inv(k,pre,pi){const sale=k==='sales',P=sale?S.customers:S.suppliers,D={
     const T=sum(V,l=>l.qty*(sale?l.price:l.cost)),dsc=Math.min(T,n0(D.disc)),net=T-dsc,pd=D.paid===''?net:Math.min(net,n0(D.paid)),made={},no=Math.max(0,...S[k].map(x=>x.no||0))+1;
     const lines=V.map(l=>{let it=l.it;
      if(!it){const key=l.iname.trim().toLowerCase();if(!made[key]){let ex=S.items.find(x=>x.name.trim().toLowerCase()===key);if(!ex){ex={id:uid(),name:l.iname.trim(),qty:0,cost:l.cost,price:l.price};S.items.push(ex)}made[key]=ex}it=made[key]}
-     if(sale)it.qty-=l.qty;else{it.qty+=l.qty;it.cost=l.cost;if(l.price>0)it.price=l.price}
-     return{iid:it.id,iname:it.name,qty:l.qty,price:l.price,cost:l.cost}});
+     let lt=null,cs=l.cost;if(sale){lt=takeLots(it,l.qty);cs=sum(lt,z=>z.c*z.q)/l.qty}else{addLot(it,l.qty,l.cost,o?o.name:'');if(l.price>0)it.price=l.price}
+     return sale?{iid:it.id,iname:it.name,qty:l.qty,price:l.price,cost:cs,lt:lt}:{iid:it.id,iname:it.name,qty:l.qty,price:l.price,cost:l.cost}});
     S[k].push({id:uid(),no:no,date:today(),time:new Date().toTimeString().slice(0,5),pid:o?o.id:'',pname:o?o.name:(sale?'عميل نقدي':'مورد غير مسجل'),disc:dsc,paid:pd,lines:lines});
     setTimeout(()=>showInv(k,no),50)},'حفظ الفاتورة');
   if(!$('#p'))return;
@@ -319,7 +329,7 @@ function itemDlg(id){const o=S.items.find(x=>x.id===id);if(!o)return;const H=[];
  S.sales.forEach(x=>x.lines.filter(l=>l.iid===id).forEach(l=>H.push([x.date,'بيع',l.qty,'sales',x.no])));
  S.purchases.forEach(x=>x.lines.filter(l=>l.iid===id).forEach(l=>H.push([x.date,'شراء',l.qty,'purchases',x.no])));
  H.sort((a,b)=>a[0]<b[0]?1:-1);
- sheet(esc(o.name),`<p class="sub">المخزون: ${f(o.qty)} · تكلفة ${fm(o.cost)} · بيع ${fm(o.price)}</p>`+(H.length?H.slice(0,6).map(h=>`<div class="row" data-inv="${h[3]}:${h[4]}"><span>${h[1]} · ${h[0]}</span><b>${f(h[2])}</b></div>`).join(''):'<p class="sub">لا توجد حركات بعد.</p>')
+ sheet(esc(o.name),`<p class="sub">المخزون: ${f(o.qty)} · آخر شراء ${fm(o.cost)} · بيع ${fm(o.price)}</p>`+lotsTbl(o)+(H.length?H.slice(0,6).map(h=>`<div class="row" data-inv="${h[3]}:${h[4]}"><span>${h[1]} · ${h[0]}</span><b>${f(h[2])}</b></div>`).join(''):'<p class="sub">لا توجد حركات بعد.</p>')
   +'<div class="btns"><button id="b1">بيع</button><button id="b2">شراء</button><button id="b4">تعديل</button></div><div class="btns"><button id="b5" class="dl">🗑 حذف المنتج</button></div>',()=>null,'إغلاق');
  $('#b1').onclick=()=>inv('sales',null,id);$('#b2').onclick=()=>inv('purchases',null,id);$('#b4').onclick=()=>edit('items',id);two($('#b5'),()=>{S.items=S.items.filter(x=>x.id!==id);save();$('#ov').classList.remove('on');render()})}
 
@@ -343,12 +353,12 @@ function invList(k,ch){const A=calc(k).reverse(),sale=k==='sales',pk=PK[k];
 
 const views={
 items(){if(!S.items.length)return empty('لا توجد منتجات بعد.<br>اضغط + لإضافة منتج، أو سجّل فاتورة شراء.');
- return S.items.filter(i=>m(i.name)).map(i=>`<div class="row" data-dt="items:${i.id}"><div class="av">📦</div><div class="im"><b>${esc(i.name)}</b><div class="sub">بيع ${fm(i.price)} · تكلفة ${fm(i.cost)}</div>${del('items',i.id)}</div><span class="tag ${i.qty<=3?'low':''}">${f(i.qty)}</span></div>`).join('')},
+ return S.items.filter(i=>m(i.name)).map(i=>`<div class="row" data-dt="items:${i.id}"><div class="av">📦</div><div class="im"><b>${esc(i.name)}</b><div class="sub">بيع ${fm(i.price)} · آخر شراء ${fm(i.cost)}${lotsOf(i).length>1?' · '+lotsOf(i).length+' دفعات':''}</div>${del('items',i.id)}</div><span class="tag ${i.qty<=3?'low':''}">${f(i.qty)}</span></div>`).join('')},
 customers(){if(!S.customers.length)return empty('لا يوجد عملاء بعد.<br>اضغط + أو أضفهم من فاتورة البيع.');return S.customers.filter(c=>m(c.name,c.phone)).map(c=>party('customers',c)).join('')},
 suppliers(){if(!S.suppliers.length)return empty('لا يوجد موردون بعد.<br>اضغط + أو أضفهم من فاتورة الشراء.');return S.suppliers.filter(c=>m(c.name,c.phone)).map(c=>party('suppliers',c)).join('')},
 sales(){return invList('sales',0)},purchases(){return invList('purchases',0)},invoices(){return invList(invK,1)},
 stats(){const SA=calc('sales'),PU=calc('purchases');
- const sl=sum(SA,x=>x.t),bu=sum(PU,x=>x.t),pr=sum(SA,x=>x.t-sum(x.lines,l=>l.qty*l.cost)),sv=sum(S.items,x=>x.qty*x.cost),low=S.items.filter(i=>i.qty<=3).length,cd=sum(SA,x=>Math.max(0,x.r)),sd=sum(PU,x=>Math.max(0,x.r));
+ const sl=sum(SA,x=>x.t),bu=sum(PU,x=>x.t),pr=sum(SA,x=>x.t-sum(x.lines,l=>l.qty*l.cost)),sv=sum(S.items,x=>sum(lotsOf(x),z=>z.q*z.c)),low=S.items.filter(i=>i.qty<=3).length,cd=sum(SA,x=>Math.max(0,x.r)),sd=sum(PU,x=>Math.max(0,x.r));
  const days=[...Array(7)].map((_,k)=>{const d=new Date(Date.now()-(6-k)*864e5),key=d.toISOString().slice(0,10);return{l:d.toLocaleDateString('ar',{weekday:'short'}),v:sum(SA.filter(s=>s.date===key),s=>s.t)}});
  const mx=Math.max(1,...days.map(d=>d.v)),top={};SA.forEach(x=>x.lines.forEach(l=>top[l.iname]=(top[l.iname]||0)+l.qty));
  const tl=Object.entries(top).sort((a,b)=>b[1]-a[1]).slice(0,3);
